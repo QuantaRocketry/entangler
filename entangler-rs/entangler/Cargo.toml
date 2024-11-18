@@ -22,7 +22,6 @@ log = { workspace = true }
 panic-probe = { workspace = true }
 defmt-rtt = { workspace = true }
 
-bmp280-ehal = { path = "../bmp280-ehal" }
 embedded-sdmmc = "0.8.0"
 lora-phy = "3.0.1"
 
