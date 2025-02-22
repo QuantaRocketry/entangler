@@ -1,0 +1,11 @@
+build:
+    west build -b rpi_pico ./app
+
+upload:
+    picotool load -v -x build/zephyr/zephyr.uf2 -f
+
+monitor:
+    sleep 2
+    cat /dev/ttyACM0
+        
+run: build upload monitor
