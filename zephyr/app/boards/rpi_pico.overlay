@@ -20,7 +20,7 @@
 
 &pinctrl {
 	lora_nss: lora_nss {
-		pinmux = <SPI1_CSN_P13>;
+		pinmux = <&gpio0 16 GPIO_ACTIVE_LOW>;
 	};
 	lora_sck: lora_sck {
 		pinmux = <SPI1_SCK_P10>;
@@ -34,11 +34,10 @@
 };
 
 &spi1 {
-	pinctrl-0 = <&lora_nss &lora_sck
-		     &lora_tx &lora_rx>;
+	pinctrl-0 = <&lora_nss &lora_sck &lora_tx &lora_rx>;
 	pinctrl-names = "default";
 	status = "okay";
-	cs-gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
+	cs-gpios = <&gpio0 16 GPIO_ACTIVE_LOW>;
 
 	lora: lora@0 {
 		compatible = "semtech,sx1276";
