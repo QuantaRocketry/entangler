@@ -12,5 +12,6 @@ mkShell {
     dfu-util
     picotool
     just
+    minicom
   ];
 }
