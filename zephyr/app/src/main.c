@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <zephyr/device.h>
+
 #include <zephyr/drivers/lora.h>
 #include <zephyr/drivers/uart.h>
 #include <zephyr/kernel.h>
@@ -11,30 +12,11 @@
 BUILD_ASSERT(DT_NODE_HAS_STATUS_OKAY(DEFAULT_RADIO_NODE),
              "No default LoRa radio specified in DT");
 
-#define MAX_DATA_LEN 255
-
-#define LOG_LEVEL CONFIG_LOG_DEFAULT_LEVEL
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(logs);
+LOG_MODULE_REGISTER(main, CONFIG_LOG_MAX_LEVEL);
 
-// LoRa Callback
-void lora_receive_cb(const struct device *dev, uint8_t *data, uint16_t size,
-                     int16_t rssi, int8_t snr, void *user_data) {
-  static int cnt;
-
-  ARG_UNUSED(dev);
-  ARG_UNUSED(size);
-  ARG_UNUSED(user_data);
-
-  LOG_INF("LoRa RX RSSI: %d dBm, SNR: %d dB", rssi, snr);
-  LOG_HEXDUMP_INF(data, size, "LoRa RX payload");
-
-  /* Stop receiving after 10 packets */
-  if (++cnt == 10) {
-    LOG_INF("Stopping packet receptions");
-    lora_recv_async(dev, NULL, NULL);
-  }
-}
+#define MAX_DATA_LEN 10
+char data[MAX_DATA_LEN] = {'V', 'K', '2', 'G', 'T', 'X'};
 
 int main(void) {
   /* Enable Logging */
@@ -52,54 +34,42 @@ int main(void) {
     k_sleep(K_MSEC(100));
   }
 
-  // k_sleep(K_SECONDS(1));
-
-  /* Enable LoRa */
   const struct device *const lora_dev = DEVICE_DT_GET(DEFAULT_RADIO_NODE);
   struct lora_modem_config config;
-  int ret, len;
-  uint8_t data[MAX_DATA_LEN] = {0};
-  int16_t rssi;
-  int8_t snr;
+  int ret;
 
   if (!device_is_ready(lora_dev)) {
     LOG_ERR("%s Device not ready", lora_dev->name);
     return 0;
   }
 
-  config.frequency = 865100000;
+  config.frequency = 915000000;
   config.bandwidth = BW_125_KHZ;
-  config.datarate = SF_10;
+  config.datarate = SF_7;
   config.preamble_len = 8;
   config.coding_rate = CR_4_5;
   config.iq_inverted = false;
   config.public_network = false;
-  config.tx_power = 14;
-  config.tx = false;
+  config.tx_power = 4;
+  config.tx = true;
 
   ret = lora_config(lora_dev, &config);
   if (ret < 0) {
-    LOG_ERR("LoRa config failed, exiting...");
+    LOG_ERR("LoRa config failed");
     return 0;
   }
 
-  /* Receive 4 packets synchronously */
-  LOG_INF("Synchronous reception");
-  for (int i = 0; i < 4; i++) {
-    /* Block until data arrives */
-    len = lora_recv(lora_dev, data, MAX_DATA_LEN, K_SECONDS(5), &rssi, &snr);
-    if (len < 0) {
-      LOG_WRN("LoRa synchronous receive timed out / failed");
-      break;
+  while (1) {
+    ret = lora_send(lora_dev, data, MAX_DATA_LEN);
+    if (ret < 0) {
+      LOG_ERR("LoRa send failed");
+      return 0;
     }
 
-    LOG_INF("LoRa RX RSSI: %d dBm, SNR: %d dB", rssi, snr);
-    LOG_HEXDUMP_INF(data, len, "LoRa RX payload");
-  }
+    LOG_INF("Data sent!");
 
-  /* Enable asynchronous reception */
-  LOG_INF("Starting Asynchronous reception");
-  lora_recv_async(lora_dev, lora_receive_cb, NULL);
-  k_sleep(K_FOREVER);
+    /* Send data at 10s interval */
+    k_sleep(K_SECONDS(10));
+  }
   return 0;
 }
