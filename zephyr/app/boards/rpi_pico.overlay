@@ -26,13 +26,13 @@
         compatible = "zephyr,fstab";
         lfs: lfs {
             compatible = "zephyr,fstab,littlefs";
-            mount-point = "/lfs1";
+            mount-point = "/lfs";
             partition = <&storage_partition>;
-            // automount;
+            automount;
             read-size = <16>;
             prog-size = <16>;
             cache-size = <64>;
-            lookahead-size = <32>;
+            lookahead-size = <64>;
             block-cycles = <512>;
             no-format;
         };
@@ -132,7 +132,7 @@
 
 		storage_partition: storage_partition@100000 {
 			label = "storage-partition";
-			reg = <DT_SIZE_M(1) (DT_SIZE_M(2) - 0x100)>;
+			reg = <DT_SIZE_M(1) (DT_SIZE_M(2))>;
 		};
 	};
 };
