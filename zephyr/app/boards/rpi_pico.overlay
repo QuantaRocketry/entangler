@@ -126,13 +126,13 @@
 
 		code_partition: partition@100 {
 			label = "code-partition";
-			reg = <0x100 DT_SIZE_M(1)>;
+			reg = <0x100 (DT_SIZE_M(1)-0x100)>;
 			read-only;
 		};
 
 		storage_partition: storage_partition@100000 {
 			label = "storage-partition";
-			reg = <DT_SIZE_M(1) (DT_SIZE_M(2))>;
+			reg = <DT_SIZE_M(1) (DT_SIZE_M(1))>;
 		};
 	};
 };
