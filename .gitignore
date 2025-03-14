@@ -5,7 +5,6 @@ build*
 nrf/
 
 # Zephyr workspace
-/.west
 /bootloader
 /modules
 /tools
