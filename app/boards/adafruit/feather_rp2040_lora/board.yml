@@ -1,0 +1,6 @@
+board:
+  name: adafruit_feather_rp2040_lora
+  full_name: Feather RP2040 LoRa
+  vendor: adafruit
+  socs:
+    - name: rp2040

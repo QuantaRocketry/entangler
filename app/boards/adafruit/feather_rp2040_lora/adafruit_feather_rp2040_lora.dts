@@ -1,3 +1,5 @@
+/dts-v1/;
+#include "adafruit_feather_rp2040_lora-common.dtsi"
 #include <zephyr/dt-bindings/led/led.h>
 
 / {
@@ -134,5 +136,13 @@
 			label = "storage-partition";
 			reg = <DT_SIZE_K(1536) (DT_SIZE_K(512))>;
 		};
+	};
+};
+
+&zephyr_udc0 {
+	status = "okay";
+	cdc_acm_uart0: cdc_acm_uart0 {
+		compatible = "zephyr,cdc-acm-uart";
+		label = "CDC_ACM_0";
 	};
 };

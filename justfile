@@ -1,5 +1,5 @@
 build:
-    west build -b rpi_pico ./app -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+    west build ./app -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 
 upload:
     #!/usr/bin/env bash
