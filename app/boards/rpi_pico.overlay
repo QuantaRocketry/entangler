@@ -110,8 +110,6 @@
 };
 
 &flash0 {
-	reg = <0x10000000 DT_SIZE_M(2)>;
-
 	partitions {
 		compatible = "fixed-partitions";
 		#address-cells = <1>;
@@ -124,15 +122,17 @@
 			read-only;
 		};
 
+		/* Reserved 1.5 MB for code */
 		code_partition: partition@100 {
 			label = "code-partition";
-			reg = <0x100 (DT_SIZE_M(1)-0x100)>;
+			reg = <0x100 (DT_SIZE_K(1536)-0x100)>;
 			read-only;
 		};
 
-		storage_partition: storage_partition@100000 {
+		/* Reserved 0.5 MB for storage */
+		storage_partition: storage_partition@180000 {
 			label = "storage-partition";
-			reg = <DT_SIZE_M(1) (DT_SIZE_M(1))>;
+			reg = <DT_SIZE_K(1536) (DT_SIZE_K(512))>;
 		};
 	};
 };

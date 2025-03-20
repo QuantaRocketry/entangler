@@ -16,3 +16,5 @@ manifest:
           - hal_rpi_pico
           - loramac-node
           - littlefs
+  self:
+    path: app

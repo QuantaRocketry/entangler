@@ -1,0 +1,11 @@
+board:
+  name: quanta_entangler
+  full_name: Quanta Entangler RP2040
+  vendor: quanta
+  socs:
+    - name: rp2040
+  revision:
+    format: number
+    default: "1"
+    revisions:
+      - name: "1"

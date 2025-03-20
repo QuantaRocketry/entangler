@@ -1,0 +1,3 @@
+config BOARD
+    default "quanta_entangler_rp2040"
+    depends on BOARD_QUANTA_ENTANGLER_RP2040

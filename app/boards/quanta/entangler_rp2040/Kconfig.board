@@ -1,0 +1,3 @@
+config BOARD_QUANTA_ENTANGLER_RP2040
+    bool "Quanta Entangler board"
+    depends on SOC_RP2040
