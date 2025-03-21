@@ -1,0 +1,138 @@
+#include <zephyr/dt-bindings/led/led.h>
+
+/ {
+	chosen {
+		zephyr,console = &cdc_acm_uart0;
+		zephyr,shell-uart = &cdc_acm_uart0;
+		zephyr,uart-mcumgr = &cdc_acm_uart0;
+		zephyr,flash = &flash0;
+	};
+
+	aliases {
+		lora0 = &lora;
+		led-strip = &ws2812;
+		led0 = &led0;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		led0: led_0 {
+			gpios = <&gpio0 13 GPIO_ACTIVE_HIGH>;
+			label = "LED 0";
+		};
+	};
+
+	fstab {
+        compatible = "zephyr,fstab";
+        lfs: lfs {
+            compatible = "zephyr,fstab,littlefs";
+            mount-point = "/lfs";
+            partition = <&storage_partition>;
+            automount;
+            read-size = <16>;
+            prog-size = <16>;
+            cache-size = <64>;
+            lookahead-size = <64>;
+            block-cycles = <512>;
+            no-format;
+        };
+    };
+};
+
+&zephyr_udc0 {
+	status = "okay";
+	cdc_acm_uart0: cdc_acm_uart0 {
+		compatible = "zephyr,cdc-acm-uart";
+		label = "CDC_ACM_0";
+	};
+};
+
+&pinctrl {
+	pio_lora_spi: pio_lora_spi {
+		group1 {
+			pinmux = <PIO0_P14>, <PIO0_P15>;	
+		};
+		group2 {
+			pinmux = <PIO0_P8>;
+			input-enable;	
+		};
+	};
+	ws2812_pio0_default: ws2812_pio0_default {
+		ws2812 {
+			pinmux = <PIO0_P4>;
+		};
+	};
+};
+
+&pio0 {
+	status = "okay";
+
+	pio0_spi0: pio0_spi0 {
+		compatible = "raspberrypi,pico-spi-pio";
+		status = "okay";
+		pinctrl-0 = <&pio_lora_spi>;
+		pinctrl-names = "default";
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+		clocks = <&clocks RPI_PICO_CLKID_CLK_SYS>;
+		miso-gpios = <&gpio0 8 0>;
+		clk-gpios = <&gpio0 14 GPIO_ACTIVE_HIGH>;
+		mosi-gpios = <&gpio0 15 GPIO_ACTIVE_HIGH>;
+		cs-gpios = <&gpio0 16 GPIO_ACTIVE_LOW>;
+
+		lora: lora@0 {
+			compatible = "semtech,sx1276";
+			reg = <0>;
+			reset-gpios = <&gpio0 17 GPIO_ACTIVE_LOW>;
+			dio-gpios = <&gpio0 21 (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>;
+			spi-max-frequency = <1000000>;
+			power-amplifier-output = "pa-boost";
+		};
+	};
+
+	pio-ws2812 {
+		compatible = "worldsemi,ws2812-rpi_pico-pio";
+		status = "okay";
+		pinctrl-0 = <&ws2812_pio0_default>;
+		pinctrl-names = "default";
+		bit-waveform = <3>, <3>, <4>;
+
+		ws2812: ws2812 {
+			status = "okay";
+			gpios = <&gpio0 4 GPIO_ACTIVE_HIGH>;
+			chain-length = <1>;
+			color-mapping = <LED_COLOR_ID_GREEN LED_COLOR_ID_RED LED_COLOR_ID_BLUE>;
+			reset-delay = <280>;
+			frequency = <800000>;
+		};
+	};
+};
+
+&flash0 {
+	reg = <0x10000000 DT_SIZE_M(2)>;
+
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/* Reserved memory for the second stage bootloader */
+		second_stage_bootloader: partition@0 {
+			label = "second_stage_bootloader";
+			reg = <0x00000000 0x100>;
+			read-only;
+		};
+
+		code_partition: partition@100 {
+			label = "code-partition";
+			reg = <0x100 (DT_SIZE_M(1)-0x100)>;
+			read-only;
+		};
+
+		storage_partition: storage_partition@100000 {
+			label = "storage-partition";
+			reg = <DT_SIZE_M(1) (DT_SIZE_M(1))>;
+		};
+	};
+};

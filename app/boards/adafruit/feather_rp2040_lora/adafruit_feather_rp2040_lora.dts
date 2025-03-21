@@ -1,19 +1,22 @@
 /dts-v1/;
-#include "adafruit_feather_rp2040_lora-common.dtsi"
+
+#include <freq.h>
+
+#include <raspberrypi/rpi_pico/rp2040.dtsi>
+#include "adafruit_feather_rp2040_lora-pinctrl.dtsi"
+
+#include <zephyr/dt-bindings/pwm/pwm.h>
+#include <zephyr/dt-bindings/i2c/i2c.h>
 #include <zephyr/dt-bindings/led/led.h>
 
 / {
 	chosen {
-		zephyr,console = &cdc_acm_uart0;
-		zephyr,shell-uart = &cdc_acm_uart0;
-		zephyr,uart-mcumgr = &cdc_acm_uart0;
+		zephyr,sram = &sram0;
 		zephyr,flash = &flash0;
-	};
-
-	aliases {
-		lora0 = &lora;
-		led-strip = &ws2812;
-		led0 = &led0;
+		zephyr,flash-controller = &ssi;
+		zephyr,console = &uart0;
+		zephyr,shell-uart = &uart0;
+		zephyr,code-partition = &code_partition;
 	};
 
 	leds {
@@ -24,67 +27,113 @@
 		};
 	};
 
-	fstab {
-        compatible = "zephyr,fstab";
-        lfs: lfs {
-            compatible = "zephyr,fstab,littlefs";
-            mount-point = "/lfs";
-            partition = <&storage_partition>;
-            automount;
-            read-size = <16>;
-            prog-size = <16>;
-            cache-size = <64>;
-            lookahead-size = <64>;
-            block-cycles = <512>;
-            no-format;
-        };
-    };
+	aliases {
+		rtc = &rtc;
+		watchdog0 = &wdt0;
+
+		led0 = &led0;
+		led-strip = &ws2812;
+		lora0 = &lora0;
+	};
+
+	/* TODO Add stemma-qt-connector */
 };
 
-&zephyr_udc0 {
+&flash0 {
+	reg = <0x10000000 DT_SIZE_M(2)>;
+
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		second_stage_bootloader: partition@0 {
+			label = "second_stage_bootloader";
+			reg = <0x00000000 0x100>;
+			read-only;
+		};
+
+		code_partition: partition@100 {
+			label = "code-partition";
+			reg = <0x100 (DT_SIZE_M(2) - 0x100)>;
+			read-only;
+		};
+	};
+};
+
+&uart0 {
+	current-speed = <115200>;
 	status = "okay";
-	cdc_acm_uart0: cdc_acm_uart0 {
-		compatible = "zephyr,cdc-acm-uart";
-		label = "CDC_ACM_0";
-	};
+	pinctrl-0 = <&uart0_default>;
+	pinctrl-names = "default";
 };
 
-&pinctrl {
-	pio_lora_spi: pio_lora_spi {
-		group1 {
-			pinmux = <PIO0_P14>, <PIO0_P15>;	
-		};
-		group2 {
-			pinmux = <PIO0_P8>;
-			input-enable;	
-		};
-	};
-	ws2812_pio0_default: ws2812_pio0_default {
-		ws2812 {
-			pinmux = <PIO0_P4>;
-		};
-	};
+&gpio0 {
+	status = "okay";
+};
+
+&i2c1 {
+	pinctrl-0 = <&i2c1_default>;
+	pinctrl-names = "default";
+	status = "disabled";
+	clock-frequency = <I2C_BITRATE_FAST>;
+};
+
+&spi0 {
+	clock-frequency = <DT_FREQ_M(8)>;
+	status = "okay";
+	pinctrl-0 = <&spi0_default>;
+	pinctrl-names = "default";
+};
+
+&timer {
+	status = "okay";
+};
+
+&wdt0 {
+	status = "okay";
+};
+
+&rtc {
+	clocks = <&clocks RPI_PICO_CLKID_CLK_RTC>;
+	status = "okay";
+};
+
+&adc {
+	status = "okay";
+	pinctrl-0 = <&adc_default>;
+	pinctrl-names = "default";
+};
+
+zephyr_udc0: &usbd {
+	status = "okay";
+};
+
+&vreg {
+	regulator-always-on;
+	regulator-allowed-modes = <REGULATOR_RPI_PICO_MODE_NORMAL>;
 };
 
 &pio0 {
 	status = "okay";
 
-	pio0_spi0: pio0_spi0 {
-		pinctrl-0 = <&pio_lora_spi>;
-		pinctrl-names = "default";
-
+	pio0_spi1: pio0_spi1 {
 		compatible = "raspberrypi,pico-spi-pio";
 		status = "okay";
+		pinctrl-0 = <&spi1_default>;
+		pinctrl-names = "default";
+
 		#address-cells = <1>;
 		#size-cells = <0>;
 		clocks = <&clocks RPI_PICO_CLKID_CLK_SYS>;
 		miso-gpios = <&gpio0 8 0>;
-		cs-gpios = <&gpio0 16 GPIO_ACTIVE_LOW>;
 		clk-gpios = <&gpio0 14 GPIO_ACTIVE_HIGH>;
 		mosi-gpios = <&gpio0 15 GPIO_ACTIVE_HIGH>;
+		cs-gpios = <&gpio0 16 GPIO_ACTIVE_LOW>;
 
-		lora: lora@0 {
+		lora0: lora0@0 {
 			compatible = "semtech,sx1276";
+			status = "disabled";
 			reg = <0>;
 			reset-gpios = <&gpio0 17 GPIO_ACTIVE_LOW>;
 			dio-gpios = <&gpio0 21 (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>;
@@ -96,53 +145,17 @@
 	pio-ws2812 {
 		compatible = "worldsemi,ws2812-rpi_pico-pio";
 		status = "okay";
-		pinctrl-0 = <&ws2812_pio0_default>;
+		pinctrl-0 = <&ws2812_default>;
 		pinctrl-names = "default";
 		bit-waveform = <3>, <3>, <4>;
 
 		ws2812: ws2812 {
-			status = "okay";
+			status = "disabled";
 			gpios = <&gpio0 4 GPIO_ACTIVE_HIGH>;
 			chain-length = <1>;
 			color-mapping = <LED_COLOR_ID_GREEN LED_COLOR_ID_RED LED_COLOR_ID_BLUE>;
 			reset-delay = <280>;
 			frequency = <800000>;
 		};
-	};
-};
-
-&flash0 {
-	partitions {
-		compatible = "fixed-partitions";
-		#address-cells = <1>;
-		#size-cells = <1>;
-
-		/* Reserved memory for the second stage bootloader */
-		second_stage_bootloader: partition@0 {
-			label = "second_stage_bootloader";
-			reg = <0x00000000 0x100>;
-			read-only;
-		};
-
-		/* Reserved 1.5 MB for code */
-		code_partition: partition@100 {
-			label = "code-partition";
-			reg = <0x100 (DT_SIZE_K(1536)-0x100)>;
-			read-only;
-		};
-
-		/* Reserved 0.5 MB for storage */
-		storage_partition: storage_partition@180000 {
-			label = "storage-partition";
-			reg = <DT_SIZE_K(1536) (DT_SIZE_K(512))>;
-		};
-	};
-};
-
-&zephyr_udc0 {
-	status = "okay";
-	cdc_acm_uart0: cdc_acm_uart0 {
-		compatible = "zephyr,cdc-acm-uart";
-		label = "CDC_ACM_0";
 	};
 };
