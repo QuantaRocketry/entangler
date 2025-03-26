@@ -1,0 +1,74 @@
+/ {
+    chosen {
+		zephyr,console = &cdc_acm_uart0;
+		zephyr,shell-uart = &cdc_acm_uart0;
+		zephyr,uart-mcumgr = &cdc_acm_uart0;
+		zephyr,flash = &flash0;
+    };
+
+	/* Set up LittleFS */
+    fstab {
+        compatible = "zephyr,fstab";
+        lfs: lfs {
+            compatible = "zephyr,fstab,littlefs";
+            mount-point = "/lfs";
+            partition = <&storage_partition>;
+            automount;
+            read-size = <16>;
+            prog-size = <16>;
+            cache-size = <64>;
+            lookahead-size = <64>;
+            block-cycles = <512>;
+        };
+    };
+};
+
+/* Enable the neopixel */
+&ws2812 {
+    status = "okay";
+};
+
+/* Enable the RFM95 */
+&lora0 {
+    status = "okay";
+};
+
+/* Enable the USB port for logging */
+&zephyr_udc0 {
+    status = "okay";
+    cdc_acm_uart0: cdc_acm_uart0 {
+		compatible = "zephyr,cdc-acm-uart";
+		label = "CDC_ACM_0";
+	};
+};
+
+/* Add storage partition*/
+&flash0 {
+	reg = <0x10000000 DT_SIZE_M(2)>;
+
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/* Reserved memory for the second stage bootloader */
+		second_stage_bootloader: partition@0 {
+			label = "second_stage_bootloader";
+			reg = <0x00000000 0x100>;
+			read-only;
+		};
+
+		/* Reserved 1.5 MB for code */
+		code_partition: partition@100 {
+			label = "code-partition";
+			reg = <0x100 (DT_SIZE_M(1) + DT_SIZE_K(512) - 0x100)>;
+			read-only;
+		};
+
+		/* Reserved 0.5 MB for storage */
+		storage_partition: storage_partition@180000 {
+			label = "storage-partition";
+			reg = <(DT_SIZE_M(1) + DT_SIZE_K(512)) (DT_SIZE_K(512))>;
+		};
+	};
+};

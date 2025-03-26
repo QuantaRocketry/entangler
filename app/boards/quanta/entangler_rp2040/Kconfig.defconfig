@@ -1,3 +1,38 @@
-config BOARD
-    default "quanta_entangler_rp2040"
-    depends on BOARD_QUANTA_ENTANGLER_RP2040
+if BOARD_QUANTA_ENTANGLER_RP2040
+
+config USB_SELF_POWERED
+	default n
+
+if LORA || FILE_SYSTEM_LITTLEFS
+
+    config MAIN_STACK_SIZE
+        default 4096
+
+    config HEAP_MEM_POOL_ADD_SIZE_BOARD
+        int
+        default 16384
+
+endif # LORA || FILE_SYSTEM_LITTLEFS
+
+if LORA
+
+    config LORA_SX127X
+        default y
+
+endif # LORA
+
+if FILE_SYSTEM_LITTLEFS
+
+    config FS_LITTLEFS_FMP_DEV
+        default y
+
+endif # FILE_SYSTEM_LITTLEFS
+
+if I2C_DW
+
+config I2C_DW_CLOCK_SPEED
+	default 125
+
+endif # I2C_DW
+
+endif # BOARD_QUANTA_ENTANGLER_RP2040
