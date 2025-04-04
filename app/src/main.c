@@ -10,8 +10,6 @@ LOG_MODULE_REGISTER(main, CONFIG_LOG_MAX_LEVEL);
 
 int main(void)
 {
-	int rc;
-
 	/* Enable Logging */
 	const struct device *const dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_console));
 	uint32_t dtr = 0;
@@ -27,11 +25,5 @@ int main(void)
 		k_sleep(K_MSEC(100));
 	}
 
-	rc = settings_subsys_init();
-	if (rc) {
-		LOG_ERR("settings subsys initialization: fail (err %d)\n", rc);
-	}
-
-	k_sleep(K_SECONDS(10));
 	return 0;
 }

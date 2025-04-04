@@ -34,6 +34,7 @@
 		led0 = &led0;
 		led-strip = &ws2812;
 		lora0 = &lora0;
+		gnss = &uart0;
 	};
 
 	/* TODO Add stemma-qt-connector */
@@ -63,9 +64,15 @@
 
 &uart0 {
 	current-speed = <115200>;
-	status = "okay";
+	status = "disabled";
 	pinctrl-0 = <&uart0_default>;
 	pinctrl-names = "default";
+
+	gnss_module: l86 {
+		status = "disabled";
+		compatible = "u-blox,m8";
+		uart-baudrate = <115200>;	
+	};
 };
 
 &gpio0 {

@@ -33,6 +33,14 @@
     status = "okay";
 };
 
+/* Enable the gnss */
+&uart0 {
+	status = "okay";
+};
+&gnss_module {
+	status = "okay";
+};
+
 /* Enable the USB port for logging */
 &zephyr_udc0 {
     status = "okay";
