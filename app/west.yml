@@ -1,20 +1,20 @@
 manifest:
-
   remotes:
-    - name: zephyrproject-rtos
+    - name: zephyrproject
       url-base: https://github.com/zephyrproject-rtos
-
   projects:
     - name: zephyr
-      remote: zephyrproject-rtos
       repo-path: zephyr
+      remote: zephyrproject
       revision: main
       clone-depth: 1
       import:
+        path-prefix: external
         name-allowlist:
           - cmsis
+          - cmsis-dsp
+          - picolibc
+          - segger
           - hal_rpi_pico
           - loramac-node
           - littlefs
-  self:
-    path: app

@@ -1,0 +1,52 @@
+{
+  "projects": {
+    "app": {
+      "rel_path": "app",
+      "name": "app",
+      "buildConfigs": {
+        "build/adafruit_feather_rp2040_lora": {
+          "relBoardDir": "app/boards",
+          "board": "adafruit_feather_rp2040_lora",
+          "relBoardSubDir": "adafruit/feather_rp2040_lora",
+          "name": "build/adafruit_feather_rp2040_lora",
+          "westBuildArgs": "",
+          "westBuildCMakeArgs": " -DCONFIG_DEBUG_OPTIMIZATIONS=y -DCONFIG_DEBUG_THREAD_INFO=y ",
+          "confFiles": {
+            "config": [],
+            "extraConfig": [],
+            "overlay": [],
+            "extraOverlay": []
+          },
+          "runnerConfigs": {
+            "uf2": {
+              "runner": "uf2",
+              "name": "uf2",
+              "args": ""
+            }
+          }
+        },
+        "build/quanta_entangler_rp2040": {
+          "relBoardDir": "app/boards",
+          "board": "quanta_entangler_rp2040",
+          "relBoardSubDir": "quanta/entangler_rp2040",
+          "name": "build/quanta_entangler_rp2040",
+          "westBuildArgs": "",
+          "westBuildCMakeArgs": " -DCONFIG_DEBUG_OPTIMIZATIONS=y -DCONFIG_DEBUG_THREAD_INFO=y ",
+          "confFiles": {
+            "config": [],
+            "extraConfig": [],
+            "overlay": [],
+            "extraOverlay": []
+          },
+          "runnerConfigs": {}
+        }
+      },
+      "confFiles": {
+        "config": [],
+        "extraConfig": [],
+        "overlay": [],
+        "extraOverlay": []
+      }
+    }
+  }
+}

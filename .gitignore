@@ -14,8 +14,12 @@ __pycache__
 /nrfxlib
 /test
 
-/.vscode
 .cache
 .ccls-cache
 
 /.direnv
+
+.venv/
+external
+**/build*/
+.vscode/compile_commands.json
