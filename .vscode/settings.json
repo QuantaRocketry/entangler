@@ -9,5 +9,13 @@
         "cdefs.h": "c"
     },
     "devicetree.zephyr": "${workspaceFolder}/external/zephyr",
-    "kconfig.zephyr.base": "${workspaceFolder}/external/zephyr"
+    "kconfig.zephyr.base": "${workspaceFolder}/external/zephyr",
+    "cSpell.words": [
+        "Adafruit",
+        "GNSS",
+        "LIBC",
+        "LITTLEFS",
+        "modbus",
+        "UART"
+    ]
 }

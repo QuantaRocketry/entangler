@@ -6,9 +6,7 @@ nrf/
 
 # Zephyr workspace
 /bootloader
-/modules
 /tools
-/zephyr
 __pycache__
 /nrf
 /nrfxlib

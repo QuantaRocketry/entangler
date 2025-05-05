@@ -1,0 +1,4 @@
+name: quanta_modbus
+build:
+  cmake-ext: True
+  kconfig-ext: True

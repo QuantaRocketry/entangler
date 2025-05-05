@@ -5,6 +5,8 @@
 
 #include "shell/shell.h"
 
+#include <quanta_modbus.h>
+
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(main, CONFIG_LOG_MAX_LEVEL);
 

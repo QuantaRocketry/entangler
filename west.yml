@@ -1,4 +1,6 @@
 manifest:
+  self:
+    path: .
   remotes:
     - name: zephyrproject
       url-base: https://github.com/zephyrproject-rtos
@@ -18,3 +20,7 @@ manifest:
           - hal_rpi_pico
           - loramac-node
           - littlefs
+
+module:
+  - name: quanta_modbus
+    path: modules/quanta_modbus

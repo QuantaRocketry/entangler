@@ -4,6 +4,7 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(app)
 
 target_include_directories(app PRIVATE ${ZEPHYR_BASE}/../modules/fs/littlefs)
+target_include_directories(app PRIVATE ../modules/quanta-modbus)
 FILE(GLOB_RECURSE app_sources src/*.c)
 target_sources(app PRIVATE ${app_sources})
 

@@ -1,9 +1,15 @@
-build:
-    west build ./app -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+build *args:
+    @if [[ -n "{{args}}" ]]; then \
+        west build ./app -b {{args}} -p auto -DCMAKE_EXPORT_COMPILE_COMMANDS=1; \
+    else \
+        west build ./app -DCMAKE_EXPORT_COMPILE_COMMANDS=1; \
+    fi
 
 upload:
     #!/usr/bin/env bash
     picotool load -v -x build/zephyr/zephyr.uf2 -f
+
+upload-delay:
     sleep 2
 
 connect:
@@ -16,4 +22,4 @@ connect:
     done)
     minicom -D "$DEV" || echo "Device not found"
 
-run: build upload connect
+run: build upload upload-delay connect
