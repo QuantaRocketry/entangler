@@ -1,0 +1,3 @@
+[submodule "qcp"]
+	path = qcp
+	url = git@github.com:QuantaRocketry/quanta-communication-protocol.git
