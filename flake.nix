@@ -24,6 +24,7 @@
               probe-run
               probe-rs
 			  cmake
+			  minicom
               # flip-link
               # kicad
             ];

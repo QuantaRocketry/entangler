@@ -2,3 +2,18 @@
 resolver = "3"
 members = ["entangler", "qcp"]
 
+[profile.dev]
+lto = true
+codegen-units = 1
+debug = 2
+debug-assertions = true
+incremental = true
+opt-level = 0
+
+[profile.release]
+codegen-units = 1
+debug = 2
+debug-assertions = false
+incremental = true
+lto = 'fat'
+opt-level = 's'

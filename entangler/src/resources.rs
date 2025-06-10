@@ -1,8 +1,8 @@
 use assign_resources::assign_resources;
 use embassy_rp::{
     bind_interrupts,
-    peripherals::{self, PIO0, PIO1, SPI1},
-    pio,
+    peripherals::{self, PIO0, PIO1, USB},
+    pio, usb,
 };
 
 assign_resources! {
@@ -14,16 +14,21 @@ assign_resources! {
         clk_pin: PIN_14,
         cs_pin: PIN_16,
         spi: SPI1,
-        pio: PIO1,
+        rx_dma: DMA_CH0,
+        tx_dma: DMA_CH1,
     },
     indicators: IndicatorResources {
         led_pin: PIN_25,
         rgb_pin: PIN_4,
         pio: PIO0,
     },
+    interface: InterfaceResources {
+        usb: USB,
+    }
 }
 
 bind_interrupts!(pub struct Irqs {
     PIO0_IRQ_0 => pio::InterruptHandler<PIO0>;
     PIO1_IRQ_0 => pio::InterruptHandler<PIO1>;
+    USBCTRL_IRQ => usb::InterruptHandler<USB>;
 });
