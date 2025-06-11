@@ -7,15 +7,15 @@ use embassy_rp::{
 
 assign_resources! {
     lora: LoraResources {
-        dio0_pin: PIN_21,
-        reset_pin: PIN_17,
-        miso_pin: PIN_8,
-        mosi_pin: PIN_15,
-        clk_pin: PIN_14,
-        cs_pin: PIN_16,
-        spi: SPI1,
-        rx_dma: DMA_CH0,
-        tx_dma: DMA_CH1,
+        dio0_pin: PIN_20,
+        reset_pin: PIN_21,
+        miso_pin: PIN_16,
+        mosi_pin: PIN_19,
+        clk_pin: PIN_18,
+        cs_pin: PIN_17,
+        spi: SPI0,
+        tx_dma: DMA_CH0,
+        rx_dma: DMA_CH1,
     },
     indicators: IndicatorResources {
         led_pin: PIN_25,

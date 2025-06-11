@@ -11,7 +11,7 @@ use {defmt_rtt as _, panic_probe as _};
 
 use crate::event::{indicator::IndicatorEvent, SystemEvent};
 use crate::resources::{AssignedResources, IndicatorResources, InterfaceResources, LoraResources};
-use crate::system::{indicator::indicator_task, interface};
+use crate::system::{indicator::indicator_task, interface, lora::lora_task};
 
 mod event;
 mod resources;
@@ -23,13 +23,21 @@ async fn main(spawner: Spawner) {
     let p = embassy_rp::init(Default::default());
     let r = split_resources!(p);
 
+    let _ = interface::start(&spawner, r.interface).await;
+
     if let Err(_) = spawner.spawn(indicator_task(r.indicators)) {
         let e = SystemEvent::Indicator(IndicatorEvent::SpawnError);
         if let Ok(publisher) = event::EVENT_CHANNEL.publisher() {
             publisher.publish(e).await;
         };
     };
-    let _ = interface::start(&spawner, r.interface).await;
+
+    if let Err(_) = spawner.spawn(lora_task(r.lora)) {
+        let e = SystemEvent::Indicator(IndicatorEvent::SpawnError);
+        if let Ok(publisher) = event::EVENT_CHANNEL.publisher() {
+            publisher.publish(e).await;
+        };
+    };
 
     info!("All tasks spawned");
 }
